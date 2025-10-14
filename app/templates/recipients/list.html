@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}Recipients{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="display-5">Your Recipients</h1>
+    <a href="{{ url_for('main.create_edit_recipient') }}" class="btn btn-primary btn-lg">
+        <i class="fas fa-user-plus me-2"></i> Add New Recipient
+    </a>
+</div>
+
+{% if recipients %}
+<div class="card shadow-sm">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th scope="col">Client Name</th>
+                        <th scope="col">Email</th>
+                        <th scope="col">Phone</th>
+                        <th scope="col">Address</th>
+                        <th scope="col" class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for recipient in recipients %}
+                    <tr>
+                        <td class="align-middle fw-bold">{{ recipient.client_name }}</td>
+                        <td class="align-middle">{{ recipient.email }}</td>
+                        <td class="align-middle">{{ recipient.phone }}</td>
+                        <td class="align-middle">{{ recipient.address_line1 }}, {{ recipient.city }}, {{ recipient.state }} {{ recipient.zip_code }}</td>
+                        <td class="text-end align-middle">
+                            <a href="{{ url_for('main.create_edit_recipient', recipient_id=recipient.id) }}" class="btn btn-sm btn-secondary me-1" data-bs-toggle="tooltip" title="Edit"><i class="fas fa-edit"></i></a>
+                            <form action="{{ url_for('main.delete_recipient', recipient_id=recipient.id) }}" method="POST" class="d-inline">
+                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this recipient? This will fail if there are associated invoices.')" data-bs-toggle="tooltip" title="Delete"><i class="fas fa-trash-alt"></i></button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="alert alert-info text-center" role="alert">
+    <h4 class="alert-heading"><i class="fas fa-info-circle me-2"></i>No Recipients Found!</h4>
+    <p>You haven't added any clients yet.</p>
+    <hr>
+    <p class="mb-0">Add your first client <a href="{{ url_for('main.create_edit_recipient') }}" class="alert-link">here</a>.</p>
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    ports:
+      - "5000:5000" # Maps port 5000 on your host to port 5000 in the container
+    volumes:
+      # Mount a volume to persist the SQLite database and other data
+      - ./data:/app/data
+    environment:
+      # Pass environment variables from the .env file to the container
+      - SECRET_KEY=${SECRET_KEY}
+      - DATABASE_URL=${DATABASE_URL}
+      - FLASK_APP=${FLASK_APP}
+      - FLASK_DEBUG=${FLASK_DEBUG}

@@ -1,0 +1,91 @@
+body {
+    padding-top: 56px; /* Height of the fixed navbar */
+    background-color: #f8f9fa; /* Light background for a clean look */
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.footer {
+    margin-top: auto; /* Push footer to the bottom */
+    background-color: #e9ecef;
+    border-top: 1px solid #dee2e6;
+}
+
+.navbar-brand {
+    font-weight: bold;
+    font-size: 1.25rem;
+}
+
+.navbar-dark .navbar-nav .nav-link.active {
+    color: #007bff; /* Primary color for active links */
+    font-weight: bold;
+}
+
+.card {
+    border: none;
+    border-radius: 0.75rem;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+}
+
+.badge {
+    padding: 0.5em 0.75em;
+    font-size: 0.85em;
+}
+
+.table thead th {
+    font-weight: 600;
+}
+
+.alert-heading {
+    margin-bottom: 0.5rem;
+}
+
+/* Tooltip styles */
+.tooltip-inner {
+    background-color: #343a40;
+    color: #fff;
+}
+.tooltip.bs-tooltip-auto[x-placement^=top] .tooltip-arrow::before,
+.tooltip.bs-tooltip-top .tooltip-arrow::before {
+    border-top-color: #343a40;
+}
+.tooltip.bs-tooltip-auto[x-placement^=bottom] .tooltip-arrow::before,
+.tooltip.bs-tooltip-bottom .tooltip-arrow::before {
+    border-bottom-color: #343a40;
+}
+.tooltip.bs-tooltip-auto[x-placement^=left] .tooltip-arrow::before,
+.tooltip.bs-tooltip-left .tooltip-arrow::before {
+    border-left-color: #343a40;
+}
+.tooltip.bs-tooltip-auto[x-placement^=right] .tooltip-arrow::before,
+.tooltip.bs-tooltip-right .tooltip-arrow::before {
+    border-right-color: #343a40;
+}
+
+/* Specific styles for date inputs to ensure consistency */
+input[type="date"] {
+    appearance: none; /* Remove default browser styling */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-calendar" viewBox="0 0 16 16"><path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1zm7-3.5a.5.5 0 0 1 .5.5V3H7V.5a.5.5 0 0 1 .5-.5z"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 1.25em 1.25em;
+    padding-right: 2.5rem;
+}
+input[type="date"]::-webkit-calendar-picker-indicator {
+    opacity: 0; /* Hide default calendar icon for better custom styling */
+    width: 1.5em; /* Make it clickable */
+    height: 1.5em;
+    cursor: pointer;
+}

@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}Invoice List{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="display-5">Your Invoices</h1>
+    <a href="{{ url_for('main.create_edit_invoice') }}" class="btn btn-primary btn-lg">
+        <i class="fas fa-plus-circle me-2"></i> Create New Invoice
+    </a>
+</div>
+
+{% if invoices %}
+<div class="card shadow-sm">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th scope="col">Invoice #</th>
+                        <th scope="col">Recipient</th>
+                        <th scope="col">Date Created</th>
+                        <th scope="col">Date Due</th>
+                        <th scope="col">Total Due</th>
+                        <th scope="col">Status</th>
+                        <th scope="col" class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for invoice in invoices %}
+                    <tr>
+                        <td class="align-middle fw-bold">
+                            <a href="{{ url_for('main.view_invoice', invoice_id=invoice.id) }}" class="text-decoration-none text-primary">
+                                {{ invoice.invoice_number }}
+                            </a>
+                        </td>
+                        <td class="align-middle">{{ invoice.recipient.client_name }}</td>
+                        <td class="align-middle">{{ invoice.date_created.strftime('%Y-%m-%d') }}</td>
+                        <td class="align-middle">
+                            {% if invoice.date_due %}
+                                {{ invoice.date_due.strftime('%Y-%m-%d') }}
+                            {% else %}
+                                N/A
+                            {% endif %}
+                        </td>
+                        <td class="align-middle fw-bold">{{ "%.2f"|format(invoice.total_due) }} {{ '$' if company else '' }}</td>
+                        <td class="align-middle">
+                            <span class="badge {% if invoice.status == 'PAID' %}bg-success{% else %}bg-warning text-dark{% endif %}">
+                                {{ invoice.status }}
+                            </span>
+                        </td>
+                        <td class="text-end align-middle">
+                            <a href="{{ url_for('main.view_invoice', invoice_id=invoice.id) }}" class="btn btn-sm btn-info text-white me-1" data-bs-toggle="tooltip" title="View"><i class="fas fa-eye"></i></a>
+                            <a href="{{ url_for('main.create_edit_invoice', invoice_id=invoice.id) }}" class="btn btn-sm btn-secondary me-1" data-bs-toggle="tooltip" title="Edit"><i class="fas fa-edit"></i></a>
+                            <form action="{{ url_for('main.delete_invoice', invoice_id=invoice.id) }}" method="POST" class="d-inline">
+                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this invoice?')" data-bs-toggle="tooltip" title="Delete"><i class="fas fa-trash-alt"></i></button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="alert alert-info text-center" role="alert">
+    <h4 class="alert-heading"><i class="fas fa-info-circle me-2"></i>No Invoices Found!</h4>
+    <p>It looks like you haven't created any invoices yet.</p>
+    <hr>
+    <p class="mb-0">Start by <a href="{{ url_for('main.create_edit_invoice') }}" class="alert-link">creating your first invoice</a>.</p>
+</div>
+{% endif %}
+{% endblock %}

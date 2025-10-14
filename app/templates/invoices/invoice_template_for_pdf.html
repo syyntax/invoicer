@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice {{ invoice.invoice_number }}</title>
+    <style>
+        /* Basic styles for PDF output, similar to the CSS in utils.py for consistency */
+        body { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 10pt; line-height: 1.5; color: #333; margin: 0; padding: 0;}
+        .container { max-width: 900px; margin: 0 auto; padding: 20px; }
+        .header { text-align: center; margin-bottom: 30px; }
+        .header h1 { font-size: 24pt; color: #007bff; margin: 0; }
+        .header p { font-size: 10pt; color: #666; margin: 0; }
+        .details-section { display: flex; justify-content: space-between; margin-bottom: 30px; }
+        .company-details, .recipient-details { width: 48%; }
+        .recipient-details { text-align: right; }
+        h4 { font-size: 12pt; margin-top: 0; margin-bottom: 10px; color: #007bff; }
+        address { font-style: normal; margin-bottom: 10px; }
+        .invoice-info { margin-bottom: 30px; border-bottom: 1px solid #eee; padding-bottom: 15px; }
+        .invoice-info p { margin: 5px 0; }
+        .table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
+        .table th, .table td { border: 1px solid #eee; padding: 8px 12px; text-align: left; vertical-align: top; }
+        .table th { background-color: #f8f8f8; font-weight: bold; }
+        .table td.text-end { text-align: right; }
+        .total-section { text-align: right; margin-top: 20px; }
+        .total-section h3 { font-size: 18pt; margin: 5px 0; color: #007bff; }
+        .status-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.9em;
+            font-weight: bold;
+            color: #fff;
+        }
+        .status-badge.paid { background-color: #28a745; } /* Green */
+        .status-badge.outstanding { background-color: #ffc107; color: #333; } /* Yellow */
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Invoice</h1>
+            <p>{{ company.name }}</p>
+        </div>
+
+        <div class="details-section">
+            <div class="company-details">
+                <h4>From:</h4>
+                <address>
+                    <strong>{{ company.name }}</strong><br>
+                    {{ company.address_line1 }}<br>
+                    {% if company.address_line2 %}{{ company.address_line2 }}<br>{% endif %}
+                    {{ company.city }}, {{ company.state }} {{ company.zip_code }}<br>
+                    Email: {{ company.email }}<br>
+                    Phone: {{ company.phone }}
+                </address>
+            </div>
+            <div class="recipient-details">
+                <h4>To:</h4>
+                <address>
+                    <strong>{{ invoice.recipient.client_name }}</strong><br>
+                    {{ invoice.recipient.address_line1 }}<br>
+                    {% if invoice.recipient.address_line2 %}{{ invoice.recipient.address_line2 }}<br>{% endif %}
+                    {{ invoice.recipient.city }}, {{ invoice.recipient.state }} {{ invoice.recipient.zip_code }}<br>
+                    Email: {{ invoice.recipient.email }}<br>
+                    Phone: {{ invoice.recipient.phone }}
+                </address>
+            </div>
+        </div>
+
+        <div class="invoice-info">
+            <p><strong>Invoice Number:</strong> {{ invoice.invoice_number }}</p>
+            <p><strong>Date Created:</strong> {{ invoice.date_created.strftime('%Y-%m-%d') }}</p>
+            <p><strong>Date Due:</strong> {% if invoice.date_due %}{{ invoice.date_due.strftime('%Y-%m-%d') }}{% else %}N/A{% endif %}</p>
+            <p><strong>Status:</strong> 
+                <span class="status-badge {% if invoice.status == 'PAID' %}paid{% else %}outstanding{% endif %}">
+                    {{ invoice.status }}
+                </span>
+            </p>
+        </div>
+
+        <h4>Line Items:</h4>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Description</th>
+                    <th class="text-end">Quantity</th>
+                    <th class="text-end">Unit Price</th>
+                    <th class="text-end">Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in invoice.line_items %}
+                <tr>
+                    <td>{{ item.description }}</td>
+                    <td class="text-end">{{ "%.2f"|format(item.quantity) }}</td>
+                    <td class="text-end">{{ "%.2f"|format(item.unit_price) }} {{ '$' if company else '' }}</td>
+                    <td class="text-end">{{ "%.2f"|format(item.total) }} {{ '$' if company else '' }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="3" class="text-end" style="font-weight: bold;">Grand Total:</td>
+                    <td class="text-end" style="font-weight: bold; font-size: 1.2em; color: #007bff;">{{ "%.2f"|format(invoice.total_due) }} {{ '$' if company else '' }}</td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</body>
+</html>

@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block title %}{% if invoice %}Edit Invoice {{ invoice.invoice_number }}{% else %}Create New Invoice{% endif %}{% endblock %}
+
+{% block content %}
+<h1 class="display-5 mb-4">{% if invoice %}Edit Invoice <span class="text-primary">{{ invoice.invoice_number }}</span>{% else %}Create New Invoice{% endif %}</h1>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <form id="invoiceForm" method="POST" action="">
+            {{ form.csrf_token }}
+            <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                    {{ form.recipient.label(class="form-label") }}
+                    {{ form.recipient(class="form-select") }}
+                    {% for error in form.recipient.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                <div class="col-md-3">
+                    {{ form.date_created.label(class="form-label") }}
+                    {{ form.date_created(class="form-control") }}
+                    {% for error in form.date_created.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                <div class="col-md-3">
+                    {{ form.date_due.label(class="form-label") }}
+                    {{ form.date_due(class="form-control") }}
+                    {% for error in form.date_due.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <hr class="my-4">
+
+            <h3 class="mb-3">Line Items</h3>
+            <div class="table-responsive mb-3">
+                <table class="table table-bordered table-striped" id="lineItemsTable">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Description</th>
+                            <th style="width: 10%;">Quantity</th>
+                            <th style="width: 15%;">Unit Price</th>
+                            <th style="width: 15%;">Total</th>
+                            <th style="width: 5%;"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Line items will be added here by JavaScript -->
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="3" class="text-end fw-bold">Grand Total:</td>
+                            <td class="fw-bold" id="grandTotal">0.00</td>
+                            <td></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+            <button type="button" class="btn btn-outline-secondary mb-4" id="addLineItemBtn"><i class="fas fa-plus me-2"></i> Add Line Item</button>
+
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    {{ form.status.label(class="form-label") }}
+                    {{ form.status(class="form-select") }}
+                    {% for error in form.status.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <input type="hidden" name="line_items_json" id="lineItemsJson">
+
+            <div class="d-flex justify-content-between">
+                <a href="{{ url_for('main.invoice_list') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-2"></i> Cancel
+                </a>
+                <button type="submit" class="btn btn-primary btn-lg">
+                    <i class="fas fa-save me-2"></i> {% if invoice %}Update Invoice{% else %}Create Invoice{% endif %}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/invoice_script.js') }}"></script>
+<script>
+    // Pass existing line items data to JavaScript when editing an invoice
+    var initialLineItems = {{ line_items_json | safe }};
+    if (initialLineItems && initialLineItems.length > 0) {
+        initialLineItems.forEach(function(item) {
+            addLineItem(item);
+        });
+        updateGrandTotal();
+    } else {
+        // Add one empty line item if creating a new invoice
+        {% if not invoice %}
+        addLineItem();
+        {% endif %}
+    }
+</script>
+{% endblock %}
